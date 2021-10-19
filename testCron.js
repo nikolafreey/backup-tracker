@@ -50,8 +50,8 @@ cron.schedule("* * * * *", () => {
       global[cronNames[index]].stop();
     }
 
-    global[cronNames[index]] = cron.schedule("* * * * *", () => {
-      console.log("CRON RAN IN JOB 3" + new Date().toLocaleString());
+    global[cronNames[index]] = cron.schedule(job.cron, () => {
+      job.consoleLogText.call();
     });
   });
 });
