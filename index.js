@@ -163,24 +163,24 @@ cronJobsToRun
 eval(cronNames[1]); // Kako pristupamo varijabli
 
 cron.schedule("*/3 * * * *", () => {
-  console.log("RUN WHOLE " + new Date().toLocaleString());
-  if (cronNames[index]) eval(varString + " = " + newValue);
+  console.log("RUN WHOLE GENERATED" + new Date().toLocaleString());
+  if (cronNames[0]) eval(varString + " = " + newValue).stop();
 });
 
-cron.schedule("*/3 * * * *", function () {
-  console.log("RUN WHOLE " + new Date().toLocaleString());
-  if (a) {
-    a.stop();
-  }
-  a = cron.schedule("*/2 * * * *", function () {
-    console.log("RUN A " + new Date().toLocaleString());
-  });
-  if (b) {
-    b.stop();
-  }
-  b = cron.schedule("*/2 * * * *", function () {
-    console.log("RUN B " + new Date().toLocaleString());
-  });
-});
+// cron.schedule("*/3 * * * *", function () {
+//   console.log("RUN WHOLE " + new Date().toLocaleString());
+//   if (a) {
+//     a.stop();
+//   }
+//   a = cron.schedule("*/2 * * * *", function () {
+//     console.log("RUN A " + new Date().toLocaleString());
+//   });
+//   if (b) {
+//     b.stop();
+//   }
+//   b = cron.schedule("*/2 * * * *", function () {
+//     console.log("RUN B " + new Date().toLocaleString());
+//   });
+// });
 
 app.listen(4000, () => console.log("App is listening on port 4000"));
