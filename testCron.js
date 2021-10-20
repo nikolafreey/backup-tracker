@@ -55,19 +55,3 @@ cron.schedule("* * * * *", () => {
     });
   });
 });
-
-// cron.schedule("*/3 * * * *", function () {
-//   console.log("RUN WHOLE " + new Date().toLocaleString());
-//   if (a) {
-//     a.stop();
-//   }
-//   a = cron.schedule("*/2 * * * *", function () {
-//     console.log("RUN A " + new Date().toLocaleString());
-//   });
-//   if (b) {
-//     b.stop();
-//   }
-//   b = cron.schedule("*/2 * * * *", function () {
-//     console.log("RUN B " + new Date().toLocaleString());
-//   });
-// });

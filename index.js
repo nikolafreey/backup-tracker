@@ -2,17 +2,20 @@ const cron = require("node-cron");
 const express = require("express");
 const nodemailer = require("nodemailer");
 const helmet = require("helmet");
-const dotenv = require("dotenv"); //Security HTTP Header Removals and Best Practises
+const mongoose = require("mongoose");
 const winston = require("winston"); //Logging Enterprise base with multiple Sinks
+const { readdirSync } = require("fs");
+require("dotenv").config();
 require("winston-mongodb");
 
 const logConfiguration = {
   transports: [
     new winston.transports.Console({
-      level: "warn",
+      level: "info",
+      colorize: true,
     }),
     new winston.transports.File({
-      level: "error",
+      level: "info",
       // Create the log directory if it does not exist
       filename: "logs/example.log",
     }),
@@ -35,6 +38,19 @@ const logConfiguration = {
 const logger = winston.createLogger(logConfiguration);
 
 const app = express();
+
+//database
+mongoose
+  .connect(process.env.DATABASE, {
+    useNewUrlParser: true,
+    // useCreateIndex: true,
+    // useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("DB Connection Successful");
+  })
+  .catch((err) => console.log("DB Connection Error: ", err.message));
 
 app.use(helmet());
 
@@ -148,39 +164,24 @@ cron.schedule("*/3 * * * *", () => {
   });
 });
 
-/////////////////////- WORKING AS INTENDED -////////////////////////////////
-let a;
-let b;
-
-let [...cronNames] = cronJobsToRun.map((job) => job.name);
-cronNames.forEach((name) => eval(name + " = " + undefined));
-
 // All in One
 cronJobsToRun
   .map((job) => job.name.replace(/ +/g, ""))
   .forEach((name) => eval(name + " = " + undefined)); //Kako pravimo varijablu iz niza stringova i inicijalizujemo je na undefined
 
-eval(cronNames[1]); // Kako pristupamo varijabli
-
 cron.schedule("*/3 * * * *", () => {
   console.log("RUN WHOLE GENERATED" + new Date().toLocaleString());
+  logger.info("Winston: " + "CRON RAN IN JOB 2" + new Date().toLocaleString());
   if (cronNames[0]) eval(varString + " = " + newValue).stop();
 });
 
-// cron.schedule("*/3 * * * *", function () {
-//   console.log("RUN WHOLE " + new Date().toLocaleString());
-//   if (a) {
-//     a.stop();
-//   }
-//   a = cron.schedule("*/2 * * * *", function () {
-//     console.log("RUN A " + new Date().toLocaleString());
-//   });
-//   if (b) {
-//     b.stop();
-//   }
-//   b = cron.schedule("*/2 * * * *", function () {
-//     console.log("RUN B " + new Date().toLocaleString());
-//   });
-// });
+//Routes middleware
+readdirSync("./routes").map((r) => app.use("/api", require("./routes/" + r)));
 
-app.listen(4000, () => console.log("App is listening on port 4000"));
+app.listen(process.env.PORT || 4000, () => {
+  console.log("App is listening on port " + process.env.PORT || 4000);
+  logger.info(
+    "App is listening on port " + process.env.PORT ||
+      4000 + new Date().toLocaleString()
+  );
+});
