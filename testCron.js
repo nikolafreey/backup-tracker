@@ -4,6 +4,7 @@ const cronJobsToRun = [
   {
     name: "Job 1",
     cron: "* * * * *",
+    active: true,
     consoleLogText: () => {
       console.log("CRON RAN IN JOB 1" + new Date().toLocaleString());
       logger.info(
@@ -14,6 +15,7 @@ const cronJobsToRun = [
   {
     name: "Job 2",
     cron: "*/2 * * * *",
+    active: true,
     consoleLogText: () => {
       console.log("CRON RAN IN JOB 2" + new Date().toLocaleString());
       logger.info(
@@ -24,6 +26,7 @@ const cronJobsToRun = [
   {
     name: "Job 3",
     cron: "*/3 * * * *",
+    active: false,
     consoleLogText: () => {
       console.log("CRON RAN IN JOB 3" + new Date().toLocaleString());
       logger.info(
@@ -50,8 +53,10 @@ cron.schedule("* * * * *", () => {
       global[cronNames[index]].stop();
     }
 
-    global[cronNames[index]] = cron.schedule(job.cron, () => {
-      job.consoleLogText.call();
-    });
+    if (job.active) {
+      global[cronNames[index]] = cron.schedule(job.cron, () => {
+        job.consoleLogText.call();
+      });
+    }
   });
 });
