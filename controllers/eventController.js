@@ -3,42 +3,37 @@ const slugify = require("slugify");
 
 exports.create = async (req, res) => {
   try {
-    req.body.slug = slugify(req.body.title);
-    const newProduct = await new Event(req.body).save();
-    res.json(newProduct);
+    req.body.slug = slugify(req.body.name);
+    const newEvent = await new Event(req.body).save();
+    res.json(newEvent);
   } catch (e) {
-    res.status(400).send("Create product failed with Error: " + e.message);
+    res.status(400).send("Create Event failed with Error: " + e.message);
   }
 };
 
 exports.listAll = async (req, res) => {
-  let products = await Product.find({})
-    .limit(+req.params.count)
-    .populate("category")
-    .populate("subCategory")
-    .sort([["createdAt", "desc"]])
+  let events = await Event.find({})
+    .limit(+req.params.count || 0)
+    .sort([["executionDate", "desc"]])
     .exec();
-  res.json(products);
+  res.json(events);
 };
 
 exports.remove = async (req, res) => {
   try {
-    const deleted = await Product.findOneAndRemove({
+    const deleted = await Event.findOneAndRemove({
       slug: req.params.slug,
     }).exec();
     res.json(deleted);
   } catch (e) {
     console.log(e);
-    return res.status(400).send("Product delete failed");
+    return res.status(400).send("Event delete failed");
   }
 };
 
 exports.read = async (req, res) => {
-  let product = await Product.findOne({ slug: req.params.slug })
-    .populate("category")
-    .populate("subCategory")
-    .exec();
-  res.json(product);
+  let event = await Event.findOne({ slug: req.params.slug }).exec();
+  res.json(event);
 };
 
 exports.update = async (req, res) => {
@@ -47,7 +42,7 @@ exports.update = async (req, res) => {
     if (req.body.title) {
       req.body.slug = slugify(req.body.title);
     }
-    const updated = await Product.findOneAndUpdate(
+    const updated = await Event.findOneAndUpdate(
       { slug: req.params.slug },
       req.body,
       { new: true } //This is required for MongoDB to return newly updated Product in the response instead of the old Product with values before the update
@@ -55,8 +50,7 @@ exports.update = async (req, res) => {
     res.json(updated);
   } catch (e) {
     console.log(e);
-    toast.error("Error updating product: " + e.message);
-    return res.status(400).send("Product update failed");
+    return res.status(400).send("Event update failed");
   }
 };
 
@@ -65,14 +59,12 @@ exports.update = async (req, res) => {
 //   try {
 //     // sort is createdAt/updatedAt    while order is desc/asc and limit will be a number that limits the number
 //     const { sort, order, limit } = req.body;
-//     const products = await Product.find({})
-//       .populate("category")
-//       .populate("subCategory")
+//     const events = await Event.find({})
 //       .sort([[sort, order]])
 //       .limit(limit)
 //       .exec();
 
-//     res.json(products);
+//     res.json(events);
 //   } catch (e) {
 //     console.log(e);
 //   }
@@ -86,20 +78,18 @@ exports.list = async (req, res) => {
     const currentPage = page || 1;
     const perPage = 3;
 
-    const products = await Product.find({})
+    const events = await Product.find({})
       .skip((currentPage - 1) * perPage)
-      .populate("category")
-      .populate("subCategory")
       .sort([[sort, order]])
-      .limit(3)
+      .limit(15)
       .exec();
-    res.json(products);
+    res.json(events);
   } catch (e) {
     console.log(e);
   }
 };
 
-exports.productsCount = async (req, res) => {
-  let total = await Product.find({}).estimatedDocumentCount().exec();
+exports.eventsCount = async (req, res) => {
+  let total = await Event.find({}).estimatedDocumentCount().exec();
   res.json(total);
 };

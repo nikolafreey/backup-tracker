@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const eventSchema = new mongoose.Schema(
   {
-    title: {
+    name: {
       type: String,
       trim: true,
       required: true,
@@ -15,6 +15,10 @@ const eventSchema = new mongoose.Schema(
       maxlength: 2000,
       text: true, //This is used by Mongoose when doing querys and for filtering purposes, $text method is used in the find query on a model
     },
+    executionDate: {
+      type: Date,
+      required: true,
+    },
     slug: {
       type: String,
       unique: true,
@@ -23,6 +27,7 @@ const eventSchema = new mongoose.Schema(
     },
     recursive: {
       type: Boolean,
+      default: false,
     },
     recursiveId: {
       type: Number,
@@ -31,6 +36,7 @@ const eventSchema = new mongoose.Schema(
     },
     active: {
       type: Boolean,
+      default: true,
     },
   },
   { timestamps: true }
